@@ -81,7 +81,6 @@ if __name__ == "__main__":
         from pprint import pprint
 
         s = get_system_info()
-        print(datetime.datetime.now())
         pprint(s)
     else:
         print("Only for Windows")
