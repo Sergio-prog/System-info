@@ -5,11 +5,13 @@ import psutil
 import time
 import datetime
 from pyspectator.computer import Computer
+from pyspectator.processor import Cpu
 from platform import uname
 import os
 import sys
+import GPUtil
 
-__version__ = "0.12"
+__version__ = "0.13b"
 
 
 def correct_size(bts):
@@ -28,6 +30,8 @@ def get_system_info() -> dict:
     info = dict()
     c = Computer()
     network = c.network_interface
+    gpu = GPUtil.getGPUs()[0]
+    cpu = Cpu(2)
     info['info'] = dict()
     info['info']['system_info'] = dict()
     info['info']['system_info'] = {'system': {'comp_name': uname().node,
@@ -46,7 +50,9 @@ def get_system_info() -> dict:
                                    'processor': {'name': uname().processor,
                                                  'phisycal_core': psutil.cpu_count(logical=False),
                                                  'all_core': psutil.cpu_count(logical=True),
-                                                 'freq_max': f"{psutil.cpu_freq().max:.2f}Мгц"},
+                                                 'freq_max': f"{psutil.cpu_freq().max:.2f}Мгц",
+                                                 'temperature': f"{cpu.temperature} °C",
+                                                 'load': f"{cpu.load} %"},
 
                                    'network': {'name': network.name,
                                                'ip': network.ip_address,
@@ -55,7 +61,18 @@ def get_system_info() -> dict:
 
                                    'ram': {'volume': correct_size(psutil.virtual_memory().total),
                                            'available': correct_size(psutil.virtual_memory().available),
-                                           'used': correct_size(psutil.virtual_memory().used)}
+                                           'used': correct_size(psutil.virtual_memory().used)},
+
+                                   'gpu': {'name': gpu.name,
+                                           'ID': gpu.id,
+                                           'Serial': gpu.serial,
+                                           'uuid': gpu.uuid,
+                                           'ram_volume': f"{gpu.memoryTotal} MB",
+                                           'ram_available': f"{gpu.memoryFree} MB",
+                                           'ram_used': f"{gpu.memoryUsed} MB",
+                                           'driver': gpu.driver,
+                                           'temperature': f"{gpu.temperature} °C",
+                                           'load': f"{gpu.load} %"}
                                    }
 
     info['info']['disks'] = dict()
