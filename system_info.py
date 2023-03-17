@@ -1,5 +1,4 @@
 import platform
-import sysconfig
 
 import psutil
 import time
@@ -8,10 +7,10 @@ from pyspectator.computer import Computer
 from pyspectator.processor import Cpu
 from platform import uname
 import os
-import sys
 import GPUtil
+import wmi
 
-__version__ = "0.13b"
+__version__ = "0.13c"
 
 
 def correct_size(bts):
@@ -32,6 +31,10 @@ def get_system_info() -> dict:
     network = c.network_interface
     gpu = GPUtil.getGPUs()[0]
     cpu = Cpu(2)
+    mboard = wmi.WMI().Win32_BaseBoard()[0]
+    bios = wmi.WMI().Win32_BIOS()[0]
+    kb = wmi.WMI().Win32_Keyboard()[0]
+
     info['info'] = dict()
     info['info']['system_info'] = dict()
     info['info']['system_info'] = {'system': {'comp_name': uname().node,
@@ -72,7 +75,14 @@ def get_system_info() -> dict:
                                            'ram_used': f"{gpu.memoryUsed} MB",
                                            'driver': gpu.driver,
                                            'temperature': f"{gpu.temperature} °C",
-                                           'load': f"{gpu.load} %"}
+                                           'load': f"{gpu.load} %"},
+                                   'motherboard': {'name': mboard.Name,
+                                                   'Model': mboard.Model,
+                                                   'product': mboard.Product,
+                                                   'serial-number': mboard.SerialNumber},
+                                   'BIOS': {'name': bios.name,
+                                            'serial_number': bios.SerialNumber,
+                                            'version': bios.version}
                                    }
 
     info['info']['disks'] = dict()
