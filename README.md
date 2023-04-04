@@ -1,5 +1,5 @@
 # System-info
 
-Program for get processor, gpu, ram, system etc. information
+Ver 0.17a
 
-Ver 0.13b
+Program for get processor, gpu, ram, system etc. information (*Only for Windows*)

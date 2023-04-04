@@ -1,3 +1,4 @@
+import locale
 import platform
 
 import psutil
@@ -9,8 +10,9 @@ from platform import uname
 import os
 import GPUtil
 import wmi
+from ctypes import windll
 
-__version__ = "0.13c"
+__version__ = "0.17a"
 
 
 def correct_size(bts):
@@ -20,6 +22,8 @@ def correct_size(bts):
             return f"{bts:.2f}{item}"
         bts /= size
 
+
+# TODO: sys language, fonts
 
 def get_system_info() -> dict:
     """
@@ -37,46 +41,51 @@ def get_system_info() -> dict:
 
     info['info'] = dict()
     info['info']['system_info'] = dict()
-    info['info']['system_info'] = {'system': {'comp_name': uname().node,
-                                              'os_name': f"{uname().system} {uname().release}",
-                                              'version': uname().version,
-                                              'arch': uname().machine,
-                                              'uptime': c.uptime,
-                                              'boot_time': c.boot_time,
-                                              'python_version': c.python_version,
+    info['info']['system_info'] = {'system': {'Comp_name': uname().node,
+                                              'OS_name': f"{uname().system} {uname().release}",
+                                              'Version': uname().version,
+                                              'Arch': uname().machine,
+                                              'Uptime': c.uptime,
+                                              'Boot_time': c.boot_time,
+                                              'Python_version': c.python_version,
                                               'Unix_time': time.time(),
-                                              'sys_time': str(datetime.datetime.now()),
+                                              'Sys_time': str(datetime.datetime.now()),
+                                              'Timezone': datetime.datetime.now().astimezone().tzname(),
                                               'windir': os.getenv("windir"),
                                               'COMSPEC': os.getenv("COMSPEC"),
-                                              'HOMEPATH': os.getenv("HOMEPATH")},
+                                              'HOMEPATH': os.getenv("HOMEPATH"),
+                                              'Screen width resolution': windll.user32.GetSystemMetrics(0),
+                                              'Screen height resolution': windll.user32.GetSystemMetrics(1),
+                                              'System language': locale.windows_locale[
+                                                  windll.kernel32.GetUserDefaultUILanguage()]},
 
-                                   'processor': {'name': uname().processor,
-                                                 'phisycal_core': psutil.cpu_count(logical=False),
-                                                 'all_core': psutil.cpu_count(logical=True),
-                                                 'freq_max': f"{psutil.cpu_freq().max:.2f}Мгц",
-                                                 'temperature': f"{cpu.temperature} °C",
-                                                 'load': f"{cpu.load} %"},
+                                   'Processor': {'name': uname().processor,
+                                                 'Physical_core': psutil.cpu_count(logical=False),
+                                                 'All_core': psutil.cpu_count(logical=True),
+                                                 'Freq_max': f"{psutil.cpu_freq().max:.2f}Мгц",
+                                                 'Temperature': f"{cpu.temperature} °C",
+                                                 'Load': f"{cpu.load} %"},
 
-                                   'network': {'name': network.name,
-                                               'ip': network.ip_address,
-                                               'broadcast_address': network.broadcast_address,
-                                               "subnet_mask": network.default_route},
+                                   'Network': {'name': network.name,
+                                               'IP': network.ip_address,
+                                               'Broadcast_address': network.broadcast_address,
+                                               "Subnet_mask": network.default_route},
 
-                                   'ram': {'volume': correct_size(psutil.virtual_memory().total),
-                                           'available': correct_size(psutil.virtual_memory().available),
-                                           'used': correct_size(psutil.virtual_memory().used)},
+                                   'RAM': {'Volume': correct_size(psutil.virtual_memory().total),
+                                           'Available': correct_size(psutil.virtual_memory().available),
+                                           'Used': correct_size(psutil.virtual_memory().used)},
 
-                                   'gpu': {'name': gpu.name,
+                                   'GPU': {'name': gpu.name,
                                            'ID': gpu.id,
                                            'Serial': gpu.serial,
                                            'uuid': gpu.uuid,
                                            'ram_volume': f"{gpu.memoryTotal} MB",
                                            'ram_available': f"{gpu.memoryFree} MB",
                                            'ram_used': f"{gpu.memoryUsed} MB",
-                                           'driver': gpu.driver,
-                                           'temperature': f"{gpu.temperature} °C",
-                                           'load': f"{gpu.load} %"},
-                                   'motherboard': {'name': mboard.Name,
+                                           'Driver': gpu.driver,
+                                           'Temperature': f"{gpu.temperature} °C",
+                                           'Load': f"{gpu.load} %"},
+                                   'Motherboard': {'name': mboard.Name,
                                                    'Model': mboard.Model,
                                                    'product': mboard.Product,
                                                    'serial-number': mboard.SerialNumber},
