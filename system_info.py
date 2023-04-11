@@ -12,7 +12,7 @@ import GPUtil
 import wmi
 from ctypes import windll
 
-__version__ = "0.17a"
+__version__ = "0.17b"
 
 
 def correct_size(bts):
@@ -23,7 +23,7 @@ def correct_size(bts):
         bts /= size
 
 
-# TODO: sys language, fonts
+# TODO: fonts
 
 def get_system_info() -> dict:
     """
